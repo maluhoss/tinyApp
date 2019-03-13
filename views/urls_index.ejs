@@ -16,6 +16,7 @@
   </p>
     <ul>
     <%for (let url in urls) {%>
+    <div>
      <li><b> <%=url%>:</b> <%=urls[url]%>
       <form method="GET" action="/urls/<%=url%>">
       <button>Edit</button>
@@ -27,6 +28,7 @@
     </form>
   <%}; %>
     </li>
+    </div>
     </ul>
 </body>
 </html>
