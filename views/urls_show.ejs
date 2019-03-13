@@ -13,10 +13,9 @@
   <a href='#'>Create New TinyURL</a>
   <p>
   <h2> ShortURL: <b><%=shortURL%></b></h2>
-  <form method="POST" action="/urls/:shortURL/update">
+  <form method="POST" action="/urls/<%=shortURL%>">
     <input class="form-control" type="text" name="longURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">
-    <button type="submit" class="btn btn-primary">Update
-    </button>
+    <button>Update</button>
   </form>
 </body>
 </html>
