@@ -9,14 +9,15 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-  <% include ../partials/_header %>
+  <% include partials/_header %>
+  <a href='#'>Create New TinyURL</a>
+  <p>
+  <h2>My URLs</h2>
     <ul>
     <%for (let url in urls) {%>
-     <li> <%=url%>: <%=urls[url]%>
+     <li><b> <%=url%>:</b> <%=urls[url]%>
   <%}; %>
     </li>
     </ul>
-
-    <a href='#'> Shorten URL!</a>
 </body>
 </html>
