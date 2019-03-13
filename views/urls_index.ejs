@@ -17,8 +17,8 @@
     <ul>
     <%for (let url in urls) {%>
      <li><b> <%=url%>:</b> <%=urls[url]%>
-      <form method="GET" action="/urls/<%=url%>">
-      <button>Edit</button>
+      <br>
+      <a href="/urls/<%=url%>">Edit</a>
       </form>
 
 
