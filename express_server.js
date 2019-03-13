@@ -7,7 +7,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 function generateRandomString() {
-  return Math.floor(100000 + Math.random()*900000);
+  let alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let numericString = '';
+  for (let i = 0; i < 6; i++) {
+    let index = Math.floor(Math.random() * alphabet.length);
+    numericString += alphabet[index];
+  } return numericString;
 }
 
 
