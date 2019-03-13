@@ -32,7 +32,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies);
   let templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"]
@@ -55,6 +54,11 @@ app.post("/login", (req, res) => {
   res.cookie("username", username);
   res.redirect("/urls");
 });
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+})
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { username: req.cookies["username"]}
