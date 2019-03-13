@@ -15,6 +15,10 @@ function generateRandomString() {
   } return numericString;
 }
 
+/*Update your express server so that the shortURL-longURL
+key-value pair are saved to the urlDatabase when it receives a
+POST request to /urls*/
+
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -31,7 +35,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
   res.send("Ok");
 });
 
