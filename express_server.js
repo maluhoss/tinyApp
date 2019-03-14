@@ -18,6 +18,16 @@ function generateRandomString() {
   } return numericString;
 }
 
+//look through emails in users object
+function emailExists() {
+  for (let user in users) {
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
 /*Update your express server so that the shortURL-longURL
 key-value pair are saved to the urlDatabase when it receives a
 POST request to /urls*/
@@ -87,15 +97,22 @@ app.get("/register", (req, res) => {
 //adding user to user object and creating cookie
 app.post("/register", (req, res) => {
   const user_id = generateRandomString();
-  users[user_id] = {
-    id: user_id,
-    email: req.body.email,
-    password: req.body.password
-  };
-  console.log(req.body)
-  res.cookie("user_id", user_id);
-  console.log(req.cookies);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!email || !password || emailExists() === true) {
+    res.send(400)
+  } else {
+    users[user_id] = {
+      id: user_id,
+      email: req.body.email,
+      password: req.body.password
+    };
+    console.log(req.body)
+    res.cookie("user_id", user_id);
+    console.log(req.cookies);
+    res.redirect("/urls");
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
