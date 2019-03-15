@@ -39,7 +39,7 @@ function urlsForUser(id) {
   for (let shortURL in urlDatabase) {
     let userIdInDatabase = urlDatabase[shortURL].user_id;
     if (id === userIdInDatabase) {
-      urls[shortURL] = urlDatabase[shortURL].longURL;
+      urls[shortURL] = { longURL: urlDatabase[shortURL].longURL };
     }
   } return urls;
 }
