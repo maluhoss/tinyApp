@@ -92,11 +92,15 @@ app.get("/register", (req, res) => {
   res.render("urls_register", { user_id: users[req.cookies["user_id"]] });
 });
 
-//creating new url to add to homepage of urls
+//creating new url to add to homepage of urls - only for registered users
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+  if (req.cookies["user_id"]) {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = req.body.longURL;
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //creating cookie when logging in
