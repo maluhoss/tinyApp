@@ -103,7 +103,7 @@ app.get("/register", (req, res) => {
 app.post("/urls", (req, res) => {
   if (req.cookies["user_id"]) {
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = { longURL: req.body.longURL, user_id: req.cookies["user_id"] }
+    urlDatabase[shortURL] = { longURL: req.body.longURL, user_id: req.cookies["user_id"] };
     res.redirect(`/urls/${shortURL}`);
   } else {
     res.redirect("/login");
@@ -159,6 +159,7 @@ app.post("/register", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let templateVars = {
+    ownerId: urlDatabase[shortURL].user_id,
     user_id: users[req.cookies["user_id"]],
     shortURL: shortURL,
     longURL: urlDatabase[shortURL].longURL,
@@ -175,14 +176,17 @@ app.get("/u/:shortURL", (req, res) => {
 
 //route to handle post requests to delete shorturls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
-});
+  if (emailExists(req.cookies["user_id"])) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+    };
+  });
+
 
 //route to handle updates on short urls
 app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-  // res.redirect("/urls");
+  res.redirect("/urls");
 });
 
 //route to read urls in json
