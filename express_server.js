@@ -32,11 +32,17 @@ function emailExists(email) {
       return user;
     }
   }
-}
+};
 
-/*Update your express server so that the shortURL-longURL
-key-value pair are saved to the urlDatabase when it receives a
-POST request to /urls*/
+function urlsForUser(id) {
+  let urls = {};
+  for (let shortURL in urlDatabase) {
+    let userIdInDatabase = urlDatabase[shortURL].user_id;
+    if (id === userIdInDatabase) {
+      urls[shortURL] = urlDatabase[shortURL].longURL;
+    }
+  } return urls;
+}
 
 //VARIABLES AND FUNCTIONS
 //all the users with email, id and password
@@ -55,8 +61,8 @@ const users = {
 
 //all the urls
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", user_id: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", user_id: "aJ48lW" }
 };
 
 
@@ -70,9 +76,10 @@ app.get("/", (req, res) => {
 //route to read urls homepage and showing index.ejs
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies["user_id"]),
     user_id: users[req.cookies["user_id"]]
   };
+
   res.render("urls_index", templateVars);
 });
 
@@ -96,21 +103,21 @@ app.get("/register", (req, res) => {
 app.post("/urls", (req, res) => {
   if (req.cookies["user_id"]) {
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = req.body.longURL;
+    urlDatabase[shortURL] = { longURL: req.body.longURL, user_id: req.cookies["user_id"] }
     res.redirect(`/urls/${shortURL}`);
   } else {
     res.redirect("/login");
   }
 });
 
-//creating cookie when logging in
+//route for logging in, creating cookie when logging in;
+//if email is not in database, email is in database but wrong password, status code 403
+//if everything matches, create cookie and redirect to /urls
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let userEmailInDatabase = emailExists(email);
   let userPassword = req.body.password;
 
-//if email is not in database, email is in database but wrong password, status code 403
-//if everything matches, create cookie and redirect to /urls
   if (!userEmailInDatabase) {
     res.send(403);
   } else if (userEmailInDatabase && userPassword !== userEmailInDatabase.password) {
@@ -154,7 +161,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     user_id: users[req.cookies["user_id"]],
     shortURL: shortURL,
-    longURL: urlDatabase[shortURL],
+    longURL: urlDatabase[shortURL].longURL,
     // user_id: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
@@ -162,7 +169,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //route to redirect get requests to long urls
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 
@@ -174,7 +181,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //route to handle updates on short urls
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
   // res.redirect("/urls");
 });
 
