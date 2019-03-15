@@ -84,12 +84,12 @@ app.get("/urls/new", (req, res) => {
 
 //route to read login page
 app.get("/login", (req, res) => {
-  res.render("urls_login");
+  res.render("urls_login", { user_id: users[req.cookies["user_id"]] });
 });
 
 //route to handle get requests to register
 app.get("/register", (req, res) => {
-  res.render("urls_register");
+  res.render("urls_register", { user_id: users[req.cookies["user_id"]] });
 });
 
 //creating new url to add to homepage of urls
