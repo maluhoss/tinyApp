@@ -135,7 +135,6 @@ app.post("/login", (req, res) => {
     res.send(403);
   } else {
     req.session.user_id = userEmailInDatabase.id;
-    console.log(req.session.user_id);
     res.redirect("/urls");
   }
 });
