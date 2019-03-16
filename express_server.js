@@ -176,17 +176,23 @@ app.get("/u/:shortURL", (req, res) => {
 
 //route to handle post requests to delete shorturls
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (emailExists(req.cookies["user_id"])) {
+  if (users[req.cookies["user_id"]]){
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
-    };
+  } else {
+      res.redirect("/login");
+    }
   });
 
 
 //route to handle updates on short urls
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-  res.redirect("/urls");
+  if (users[req.cookies["user_id"]]) {
+    urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //route to read urls in json

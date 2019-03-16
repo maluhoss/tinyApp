@@ -11,11 +11,15 @@
 <body style="font-size:20px; padding:50px;">
   <% include partials/_header %>
   <a href='/urls/new'>Create New TinyURL</a>
-  <p>
+  <% if (!user_id) {%>
+  <p>Please log in to see the URL or this URL is not yours!</p>
+  <%} else { %>
+
   <h2> ShortURL: <b><%=shortURL%></b></h2>
   <form method="POST" action="/urls/<%=shortURL%>">
     <input class="form-control" type="text" name="longURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">
     <button type="submit" class="btn btn-primary">Update</button>
   </form>
+  <%}%>
 </body>
 </html>
