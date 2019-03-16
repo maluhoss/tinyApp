@@ -79,7 +79,13 @@ var urlDatabase = {
 
 //route to read homepage, printing Hello
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const loggedInUser = req.session.user_id;
+
+  if (loggedInUser) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //route to read urls homepage and showing index.ejs
@@ -88,8 +94,13 @@ app.get("/urls", (req, res) => {
     urls: urlsForUser(req.session.user_id),
     user_id: users[req.session.user_id]
   };
+  let loggedInUser = req.session.user_id
 
-  res.render("urls_index", templateVars);
+  if (loggedInUser) {
+   res.render("urls_index", templateVars);
+ } else {
+  res.send("<html><body>You are not logged in! Please login by going to http://localhost:8080/login</body></html>")
+ }
 });
 
 //route to read creating new url links page
@@ -162,7 +173,6 @@ app.post("/register", (req, res) => {
       password: hashedPassword
     };
     req.session.user_id = user_id;
-    console.log(req.session.user_id);
     res.redirect("/urls");
   }
 });
