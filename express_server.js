@@ -105,8 +105,14 @@ app.get("/urls", (req, res) => {
 
 //route to read creating new url links page
 app.get("/urls/new", (req, res) => {
-  let templateVars = { user_id: users[req.session.user_id] }
-  res.render("urls_new", templateVars);
+  let templateVars = { user_id: users[req.session.user_id] };
+  let loggedInUser = req.session.user_id;
+
+  if (loggedInUser) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //route to read login page
