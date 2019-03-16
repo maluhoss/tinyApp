@@ -4,6 +4,9 @@ var express = require("express");
 var app = express();
 var PORT = 8080; // default port 8080
 
+//utilizing bcrypt to hash password
+const bcrypt = require('bcrypt');
+
 //set ejs as the view engine for the ejs templates
 app.set("view engine", "ejs");
 
@@ -116,11 +119,13 @@ app.post("/urls", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let userEmailInDatabase = emailExists(email);
+  let userPasswordInDatabase = userEmailInDatabase.password
   let userPassword = req.body.password;
+  let hashedVsUserPassword = bcrypt.compareSync(userPassword, userPasswordInDatabase);
 
   if (!userEmailInDatabase) {
     res.send(403);
-  } else if (userEmailInDatabase && userPassword !== userEmailInDatabase.password) {
+  } else if (userEmailInDatabase && hashedVsUserPassword === false) {
     res.send(403);
   } else {
     res.cookie("user_id", userEmailInDatabase.id);
@@ -140,6 +145,7 @@ app.post("/register", (req, res) => {
   const user_id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email || !password || emailExists(email)) {
     res.send(400)
@@ -147,8 +153,9 @@ app.post("/register", (req, res) => {
     users[user_id] = {
       id: user_id,
       email: req.body.email,
-      password: req.body.password
+      password: hashedPassword
     };
+    console.log(users[user_id]);
     res.cookie("user_id", user_id);
     res.redirect("/urls");
   }
