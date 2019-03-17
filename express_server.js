@@ -99,7 +99,7 @@ app.get("/urls", (req, res) => {
   if (loggedInUser) {
    res.render("urls_index", templateVars);
  } else {
-  res.send("<html><body>You are not logged in! Please login by going to http://localhost:8080/login</body></html>")
+  res.redirect("/login");
  }
 });
 
@@ -117,7 +117,11 @@ app.get("/urls/new", (req, res) => {
 
 //route to read login page
 app.get("/login", (req, res) => {
-  res.render("urls_login", { user_id: users[req.session.user_id] });
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", { user_id: users[req.session.user_id] });
+  }
 });
 
 //route to handle get requests to register
@@ -141,18 +145,26 @@ app.post("/urls", (req, res) => {
 //if everything matches, create cookie and redirect to /urls
 app.post("/login", (req, res) => {
   let email = req.body.email;
+  // console.log(email);
   let userEmailInDatabase = emailExists(email);
-  let userPasswordInDatabase = userEmailInDatabase.password
-  let userPassword = req.body.password;
-  let hashedVsUserPassword = bcrypt.compareSync(userPassword, userPasswordInDatabase);
+  // console.log(userEmailInDatabase);
 
-  if (!userEmailInDatabase) {
-    res.send(403);
-  } else if (userEmailInDatabase === true && hashedVsUserPassword === false) {
-    res.send(403);
+  if(!userEmailInDatabase) {
+    res.send("This email does not exist. Please register or try again.");
   } else {
-    req.session.user_id = userEmailInDatabase.id;
-    res.redirect("/urls");
+    const userPasswordInDatabase = userEmailInDatabase.password;
+    // console.log(userPasswordInDatabase);
+    const userPassword = req.body.password;
+    // console.log(userPassword);
+    let hashedVsUserPassword = bcrypt.compareSync(userPassword, userPasswordInDatabase);
+    // console.log(hashedVsUserPassword);
+    if (hashedVsUserPassword === false) {
+      res.send("The email or password is incorrect. Please try again.")
+    } else {
+      req.session.user_id = userEmailInDatabase.id;
+      console.log(req.session.user_id)
+      res.redirect("/urls");
+    }
   }
 });
 
@@ -171,7 +183,7 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (!email || !password || emailExists(email)) {
-    res.send(400)
+    res.send("An email and password is required. If an email and password has been typed in, this email has already been registered.")
   } else {
     users[user_id] = {
       id: user_id,
@@ -187,14 +199,23 @@ app.post("/register", (req, res) => {
 //route to read specific url page
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
+  let userID = req.session.user_id;
+  let ownerID = urlDatabase[shortURL].user_id;
+
   let templateVars = {
     ownerId: urlDatabase[shortURL].user_id,
     user_id: users[req.session.user_id],
     shortURL: shortURL,
     longURL: urlDatabase[shortURL].longURL,
-    // user_id: users[req.cookies["user_id"]]
   };
-  res.render("urls_show", templateVars);
+
+  if (userID === undefined) {
+    res.send("You are not logged in. Please go to http://localhost:8080/login");
+  } else if (userID !== ownerID) {
+    res.send("This is not your URL. Please go to http://localhost:8080/urls to see your URLS");
+  } else {
+    res.render("urls_show", templateVars);
+  }
 });
 
 //route to redirect get requests to long urls
