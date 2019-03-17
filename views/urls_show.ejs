@@ -15,11 +15,13 @@
   <p>Please log in to see the URL or this URL is not yours!</p>
   <%} else { %>
 
+  <div>
   <h2> ShortURL: <b><%=shortURL%></b></h2>
   <form method="POST" action="/urls/<%=shortURL%>">
     <input class="form-control" type="text" name="longURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">
-    <button type="submit" class="btn btn-primary">Update</button>
-
+    <button type="submit" class="btn btn-primary">Update URL</button>
+    </div>
+    <br>
     <form method="GET" action="/urls">
     <button type="submit" class="btn btn-primary">Go back to list of URLs</button>
   </form>

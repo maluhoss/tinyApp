@@ -116,7 +116,7 @@ app.get("/register", (req, res) => {
     res.redirect("/urls");
   } else {
     res.render("urls_register", { user_id: users[req.session.user_id] });
-  }
+  };
 });
 
 /*Route for GET request for login page
@@ -127,20 +127,20 @@ app.get("/login", (req, res) => {
     res.redirect("/urls");
   } else {
     res.render("urls_login", { user_id: users[req.session.user_id] });
-  }
+  };
 });
 
 /*Route for GET request for URLs home page
 LOGGED IN USERS: shown their URLs homepage with list of their URLs
 NON-LOGGED IN USERS: only logged in users can have shortURLS, so redirected to login page for email and password*/
 app.get("/urls", (req, res) => {
-  let templateVars = {
-    urls: urlsForUser(req.session.user_id),
-    user_id: users[req.session.user_id]
-  };
   let loggedInUser = req.session.user_id;
 
   if (loggedInUser) {
+    let templateVars = {
+    urls: urlsForUser(req.session.user_id),
+    user_id: users[req.session.user_id]
+  };
    res.render("urls_index", templateVars);
  } else {
   res.redirect("/login");
@@ -152,10 +152,10 @@ LOGGED IN USERS: shown new url page to create URLs page, by checking for presenc
 NON-LOGGED IN USERS: Only logged in users can create URLs so directed to login page */
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { user_id: users[req.session.user_id] };
   let loggedInUser = req.session.user_id;
 
   if (loggedInUser) {
+    let templateVars = { user_id: users[req.session.user_id] };
     res.render("urls_new", templateVars);
   } else {
     res.redirect("/login");
@@ -182,24 +182,19 @@ If email and password match: shown their URLs homepage; unique session cookie li
 If email is not in database or wrong password inputted: redirected to appropriate error message*/
 app.post("/login", (req, res) => {
   let email = req.body.email;
-  // console.log(email);
   let userEmailInDatabase = emailExists(email);
-  // console.log(userEmailInDatabase);
 
   if(!userEmailInDatabase) {
     res.send("This email does not exist in our database. Please register or try again.");
   } else {
     const userPasswordInDatabase = userEmailInDatabase.password;
-    // console.log(userPasswordInDatabase);
     const userPassword = req.body.password;
-    // console.log(userPassword);
     let hashedVsUserPassword = bcrypt.compareSync(userPassword, userPasswordInDatabase);
-    // console.log(hashedVsUserPassword);
+
     if (hashedVsUserPassword === false) {
       res.send("The password is incorrect. Please try again.")
     } else {
       req.session.user_id = userEmailInDatabase.id;
-      // console.log(req.session.user_id)
       res.redirect("/urls");
     };
   };
