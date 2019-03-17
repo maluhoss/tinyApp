@@ -199,22 +199,35 @@ app.post("/register", (req, res) => {
 //route to read specific url page
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
-  let userID = req.session.user_id;
-  let ownerID = urlDatabase[shortURL].user_id;
 
-  let templateVars = {
-    ownerId: urlDatabase[shortURL].user_id,
-    user_id: users[req.session.user_id],
-    shortURL: shortURL,
-    longURL: urlDatabase[shortURL].longURL,
-  };
+  function checkUrlExists(shortURL) {
+    for (let url in urlDatabase) {
+      if (shortURL === url) {
+        return url;
+      }
+    }
+  }
 
-  if (userID === undefined) {
-    res.send("You are not logged in. Please go to http://localhost:8080/login");
-  } else if (userID !== ownerID) {
-    res.send("This is not your URL. Please go to http://localhost:8080/urls to see your URLS");
+  if (checkUrlExists(shortURL) === undefined) {
+    res.send("This URL does not exist.");
   } else {
-    res.render("urls_show", templateVars);
+    let userID = req.session.user_id;
+    if (userID === undefined) {
+      res.send("You are not logged in. Please go to http://localhost:8080/login");
+    } else {
+      let ownerID = urlDatabase[shortURL].user_id;
+      if (userID !== ownerID) {
+        res.send("This is not your URL. Please go to http://localhost:8080/urls to see your URLS");
+      } else {
+        let templateVars = {
+          ownerId: urlDatabase[shortURL].user_id,
+          user_id: users[req.session.user_id],
+          shortURL: shortURL,
+          longURL: urlDatabase[shortURL].longURL,
+        };
+        res.render("urls_show", templateVars);
+      }
+    }
   }
 });
 
