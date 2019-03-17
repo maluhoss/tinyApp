@@ -19,6 +19,9 @@
   <form method="POST" action="/urls/<%=shortURL%>">
     <input class="form-control" type="text" name="longURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">
     <button type="submit" class="btn btn-primary">Update</button>
+
+    <form method="GET" action="/urls">
+    <button type="submit" class="btn btn-primary">Go back to list of URLs</button>
   </form>
   <%}%>
 </body>
