@@ -126,7 +126,11 @@ app.get("/login", (req, res) => {
 
 //route to handle get requests to register
 app.get("/register", (req, res) => {
-  res.render("urls_register", { user_id: users[req.session.user_id] });
+  if (req.session.user_id) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_register", { user_id: users[req.session.user_id] });
+  }
 });
 
 //creating new url to add to homepage of urls - only for registered users
